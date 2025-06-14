@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { useRef } from "react";
+import Swal from 'sweetalert2'
+import { addStudent } from "../service/api.js";
 
 const Form = () =>{
 
@@ -42,7 +44,30 @@ const Form = () =>{
             alert("Upload Image")
             validImage.current.focus()
         }else{
-            // next class me dekhenge
+            const formData = new FormData()     // when you are uploading image in database
+            formData.append('image', student.image, student.image.name)
+            formData.append('name', student.name)
+            formData.append('mobile', student.mobile)
+            formData.append('email', student.email)
+
+            try{
+                const res = await addStudent(formData)
+                if(res.status === 201){     // denote success for insert
+                    Swal.fire({
+                        title: "Success!",
+                        text: res.data,
+                        icon: "success"
+                    });
+                }else{
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Something went wrong!",
+                    });
+                }
+            }catch(error){
+                console.log("Error While Inserting Data", error)
+            }
         }
     }
 
